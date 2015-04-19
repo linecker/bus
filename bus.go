@@ -17,6 +17,7 @@ var (
 
 func Send(message string) {
 	if connection != nil {
+		fmt.Printf("Send: %s\n", message)
 		connection.Write([]byte(message))
 	}
 }
@@ -43,8 +44,9 @@ func Setup(callback Receive) {
 		log.Fatal(err)
 	}
 	l.SetReadBuffer(bufferSize)
-	go func() { 
+	go func() {
 		for {
+			fmt.Println("read loop")
 			b := make([]byte, bufferSize)
 			n, src, err := l.ReadFromUDP(b)
 			if err != nil {
@@ -56,15 +58,13 @@ func Setup(callback Receive) {
 }
 
 func recv_impl(source *net.UDPAddr, n int, b []byte) {
-	fmt.Println("received " + string(b))
+	fmt.Printf("Recv: %s\n" + string(b))
 }
 
 func main() {
-	fmt.Println("test")
 	Setup(recv_impl)
 	for {
-		fmt.Println("loop")
-		Send("test")
+		Send("send loop")
 		time.Sleep(1 * time.Second)
 	}
 }
